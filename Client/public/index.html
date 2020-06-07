@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="css" href="style.css">
+    <title>Todos</title>
+</head>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    function postTodo(title, description) {
+        return new Promise((resolve, reject) => {
+            try {
+                jQuery.ajax({
+                    url: "http://localhost:3000/todos",
+                    method: "POST",
+                    contentType: "application/json",
+                    data: {
+                        title,
+                        description
+                    },
+                    success: (data, textStatus, jqXHR) => {
+                        resolve(data);
+                    },
+                    error: (jqXHR, textStatus, error) => {
+                        reject({
+                            jqXHR,
+                            textStatus,
+                            error
+                        });
+                    }
+                });
+            } catch (e) {
+                reject(e);
+            }
+        });
+    };
+
+    function fetchTodos() {
+        return new Promise((resolve, reject) => {
+            try {
+                jQuery.ajax({
+                    url: "http://localhost:3000/todos",
+                    success: (data, textStatus, jqXHR) => {
+                        resolve(data);
+                    },
+                    error: (jqXHR, textStatus, error) => {
+                        reject({
+                            jqXHR,
+                            textStatus,
+                            error
+                        });
+                    }
+                });
+            } catch (e) {
+                reject(e);
+            }
+        });
+    };
+
+    var states = {
+        LOADING: "LOADING",
+        SUCCESS: "SUCCESS",
+        ERROR: "ERROR",
+    }
+
+    function loadingState() {
+        return {
+            state: states.LOADING
+        }
+    }
+    function successState(todos) {
+        return {
+            state: states.SUCCESS,
+            todos
+        }
+    }
+    function errorState(message) {
+        return {
+            state: states.ERROR,
+            message
+        }
+    }
+
+    $(() => {
+        var app = document.querySelector("#app");
+        var loadingTemplate = document.querySelector("#loading");
+        var errorTemplate = document.querySelector("#error");
+        var todosTemplate = document.querySelector("#todos");
+        var todoTemplate = document.querySelector("#todo");
+
+        // THIS IS WHAT I NEED TO DO
+        var renderNewTodoForm = () => {
+            // TODO
+            // create html form, input elements and button
+            // attach listener to button to call createTodo action
+
+
+           // app.apend('<p> I am sad boi </p>');
+           // return '<input>';
+
+            //$("#app").append(var1);
+
+            /*
+            var txt1 = "<p>Text.</p>";               // Create element with HTML 
+            var txt2 = $("<p></p>").text("Text.");   // Create with jQuery
+            var txt3 = document.createElement("p");  // Create with DOM
+            txt3.innerHTML = "Text.";
+            $("#app").append(txt1, txt2, txt3); 
+            */
+           var1 = document.getElementById("app").append("<p>testing 4321</p>");
+            //return "<p>testing 4321</p>";
+           // return $("<p></p>").text("foobar");
+           return var1;
+
+            /*
+            function balogna ({
+
+            })
+                $("#app").append(
+                    // Creating Form Div and Adding <h2>
+                    $("</h2>").text("To-do List"), $("</form>", {
+                        action: '#',
+                        method: '#'
+                    }).append(
+                    // Create <form> Tag and Appending in HTML Div form1.
+                    $("<input/>", {
+                        type: 'text',
+                        id: 'myInput',
+                        placeholder: 'Title...',
+                        text: ''
+                    }), 
+                    // Creating Span Element With Attribute.
+                    $("</span>", {
+                        onclick: 'newElement()',
+                        id="button",
+                        class: 'addBtn',
+                        name: 'Add'
+                    }),
+
+                    $("<ul/>", {
+                            id: 'myUL'
+                    })))
+                    
+
+           
+            $("#button").click(function(){
+                createTodo();
+            });
+            */
+
+         
+        }
+
+        var renderTodo = (todo) => {
+            var todoElem = todoTemplate.content.cloneNode(true);
+            todoElem.querySelector(".todo-title").innerText = todo.title;
+            todoElem.querySelector(".todo-description").innerText = todo.description;
+            return todoElem;
+        };
+
+        var renderTodoList = (todos) => {
+            var todosContainer = todosTemplate.content.cloneNode(true);
+            var todoList = todosContainer.querySelector(".todos");
+            for (var todo of todos) {
+                var todoElem = renderTodo(todo);
+                todoList.append(todoElem);
+            }
+            return todoList;
+        }
+
+        var appendNewTodoToList = (todo) => {
+            var todoElem = renderTodo(todo);
+            app.querySelector(".todos").appendChild(todoElem);
+        }
+
+        var renderSuccess = (todos) => {
+            var todoList = renderTodoList(todos);
+            var newTodoForm = renderNewTodoForm();
+            while (app.hasChildNodes()) {
+                app.childNodes[0].remove();
+            }
+            app.append(todoList);
+            app.append(newTodoForm);
+        }
+
+        var renderError = (message) => {
+            var error = errorTemplate.content.cloneNode(true);
+            error.querySelector(".error").innerText = message;
+            while (app.hasChildNodes()) {
+                app.childNodes[0].remove();
+            }
+            app.append(error);
+        }
+
+        var renderLoading = () => {
+            var loading = loadingTemplate.content.cloneNode(true);
+            while (app.hasChildNodes()) {
+                app.childNodes[0].remove();
+            }
+            app.append(loading);
+        }
+
+        var render = (fetchState) => {
+            switch (fetchState.state) {
+                case states.LOADING: {
+                    renderLoading();
+                    break;
+                }
+                case states.SUCCESS: {
+                    renderSuccess(fetchState.todos)
+                    break;
+                }
+                case states.ERROR: {
+                    renderError(fetchState.message);
+                    break;
+                }
+            }
+        }
+
+        // actions
+        var createTodo = () => {
+            // read form values from create new todo form
+            // call postTodo method with values from form
+            //
+            // pseudocode 
+            // var title = formTitleElem.value;
+            // var description = formTitleElem.value;
+            // postTodo(title, description).then((todo) => {
+            //   appendNewTodoToList(todo)
+            // }).catch((err) => {
+            //   render form error message
+            // })
+
+            var title = $("#myInput").placeholder;
+            var description = $("#myInput").text().text;
+
+            postTodo(title, description).then((todo) => {
+                appendNewTodoToList(todo)
+            }).catch((err) => {
+                altert("You must enter a list item!")
+            })
+        }
+
+        var loadAllAction = () => {
+            render(loadingState());
+            fetchTodos().then((todos) => {
+                render(successState(todos))
+            }).catch((err) => {
+                if (err instanceof Error) {
+                    render(errorState(err.message));
+                    return;
+                }
+                render(errorState(JSON.stringify(err.jqXHR.responseJSON)));
+            });
+        };
+
+        loadAllAction();
+    });
+
+</script>
+
+<body>
+    <h1>
+        Todos
+    </h1>
+    <div id="app">
+    </div>
+</body>
+
+<template id="loading">
+    <p class="loading">Loading...</p>
+</template>
+
+<template id="error">
+    <p class="error"></p>
+</template>
+
+<template id="todos">
+    <dl class="todos"></dl>
+</template>
+
+<template id="todo">
+    <dt class="todo-title">
+    </dt>
+    <dd class="todo-description">
+    </dd>
+</template>
+
+</html>
